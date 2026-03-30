@@ -98,6 +98,30 @@ npx tsc --noEmit
 npm run test:unit
 ```
 
+## GitHub Actions CI/CD
+
+This repo includes two workflows:
+
+1. `.github/workflows/ci.yml`
+2. `.github/workflows/deploy.yml`
+
+Behavior:
+
+1. Pull requests to `main` run full CI checks: lint, typecheck, unit tests, build, and Playwright E2E.
+2. Pushes to `main` (for example after PR merge) run the same checks, then deploy to Vercel production.
+
+Required GitHub repository secrets for deploy:
+
+1. `VERCEL_TOKEN`
+2. `VERCEL_ORG_ID`
+3. `VERCEL_PROJECT_ID`
+
+Recommended repository settings:
+
+1. Protect `main` and require pull requests.
+2. Require the CI workflow check to pass before merge.
+3. Optionally require up-to-date branches before merge.
+
 ## Supabase CLI Commands
 
 ```bash
