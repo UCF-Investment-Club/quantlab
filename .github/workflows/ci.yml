@@ -14,10 +14,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-key
-  SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role
-  CRON_SECRET: ci-placeholder-cron-secret
+  NEXT_PUBLIC_SUPABASE_URL: { { secrets.NEXT_PUBLIC_SUPABASE_URL } }
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+    { { secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY } }
+  SUPABASE_SERVICE_ROLE_KEY: { { secrets.SUPABASE_SERVICE_ROLE_KEY } }
+  CRON_SECRET: { { secrets.CRON_SECRET } }
 
 jobs:
   quality:
