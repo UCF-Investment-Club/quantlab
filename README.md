@@ -1,40 +1,115 @@
 # UCF Investment Club - Quant Lab
 
-The **Quant Lab** is the internal web platform for the University of Central Florida Investment Club. It serves as the centralized hub for portfolio management, financial research, stock analysis, collaboration, and education for all club members.
+Quant Lab is the authenticated, role-aware internal platform for ICQ Labs workflows.
 
----
+## Local Setup
 
-## Getting Started
+1. Install dependencies.
 
-First, run the development server:
+```bash
+npm install
+```
+
+2. Configure environment variables.
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+CRON_SECRET="shared-secret-for-ingestion-trigger"
+NEWS_DEFAULT_TICKERS="AAPL,MSFT,SPY"
+```
+
+3. Run the app.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Migrations
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Phase 1 schema and RLS policies are in [supabase/migrations/202603290001_phase1_foundation.sql](supabase/migrations/202603290001_phase1_foundation.sql).
 
-## Learn More
+Apply this migration through your Supabase migration workflow before testing APIs.
 
-To learn more about Next.js, take a look at the following resources:
+## Admin Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Manual News Ingestion
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Admins can trigger news ingestion on-demand from the **News Feed** dashboard page. A "Run Ingestion" button is visible only to users with ADMIN role. Upon click, the button shows ingestion progress and displays the number of articles fetched and inserted.
 
-## Deploy on Vercel
+### Hourly Auto-Ingestion (Production)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+On Vercel deployments, news ingestion runs automatically every hour via Cron Job triggers. This is configured in [vercel.json](vercel.json) and uses the `CRON_SECRET` environment variable for authentication.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Ingestion Endpoint Authentication:**
+
+The `POST /api/v1/internal/news/ingest` endpoint accepts authorization via:
+
+- **Header:** `x-cron-secret: <CRON_SECRET>` (for Vercel Cron and manual internal calls)
+- **Header:** `Authorization: Bearer <CRON_SECRET>` (alternative Bearer token format)
+- **Session Auth:** Authenticated users with ADMIN role (fallback if cron secret not provided)
+
+To manually trigger ingestion in development or production with curl:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/internal/news/ingest \
+  -H "x-cron-secret: your-cron-secret-value"
+```
+
+or with Bearer token:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/internal/news/ingest \
+  -H "Authorization: Bearer your-cron-secret-value"
+```
+
+## Implemented API Surface (Current)
+
+Authentication:
+
+1. POST /api/v1/auth/login
+2. POST /api/v1/auth/logout
+3. POST /api/v1/auth/reset/request
+4. POST /api/v1/auth/reset/confirm
+
+Members/Admin:
+
+1. GET /api/v1/members
+2. POST /api/v1/members/invite
+3. PATCH /api/v1/members/:id/role
+4. GET /api/v1/members/invite/verify
+5. POST /api/v1/members/invite/accept
+
+News:
+
+1. GET /api/v1/news
+2. GET /api/v1/news/earnings
+3. GET /api/v1/news/sec-filings
+4. POST /api/v1/internal/news/ingest
+
+## Quality Commands
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm run test:unit
+```
+
+## Supabase CLI Commands
+
+```bash
+npm run supabase:init
+npm run supabase:start
+npm run supabase:reset
+npm run supabase:push
+npm run supabase:types
+npm run supabase:types:linked
+```
+
+Notes:
+
+1. Local Supabase requires Docker daemon access.
+2. Remote push requires `supabase login` and `supabase link --project-ref <ref>` before `npm run supabase:push`.
