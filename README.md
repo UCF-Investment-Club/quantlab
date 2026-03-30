@@ -14,10 +14,9 @@ npm install
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_URL="your-publishable-url"
 SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 CRON_SECRET="shared-secret-for-ingestion-trigger"
-NEWS_DEFAULT_TICKERS="AAPL,MSFT,SPY"
 ```
 
 3. Run the app.
