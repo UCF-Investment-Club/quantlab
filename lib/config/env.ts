@@ -28,12 +28,10 @@ export function getEnv(): RequiredEnv {
   );
 
   const supabasePublishableKey = requireEnv(
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY",
     readFirstDefined([
-      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      // Backward-compatibility for incorrectly named envs already present.
       "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     ]),
   );
 

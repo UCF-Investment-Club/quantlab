@@ -3,5 +3,4 @@
         "npx tsc": true,
         "npx supabase": true
     },
-    "prettier.ignorePath": ".github/"
 }
