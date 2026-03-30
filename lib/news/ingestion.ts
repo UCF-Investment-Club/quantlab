@@ -20,13 +20,34 @@ function sleep(ms: number): Promise<void> {
   });
 }
 
-function parseTickersFromEnv(): string[] {
-  const value = process.env.NEWS_DEFAULT_TICKERS ?? "AAPL,MSFT,SPY";
-  return value
-    .split(",")
-    .map((item) => item.trim().toUpperCase())
-    .filter(Boolean)
-    .slice(0, 25);
+function getIngestionTickers(): string[] {
+  return [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "AMZN",
+    "GOOGL",
+    "META",
+    "TSLA",
+    "SPY",
+    "QQQ",
+    "IWM",
+    "XLF",
+    "XLK",
+    "JPM",
+    "BAC",
+    "WFC",
+    "GS",
+    "MS",
+    "BRK-B",
+    "V",
+    "MA",
+    "AMD",
+    "INTC",
+    "AVGO",
+    "NFLX",
+    "CRM",
+  ];
 }
 
 function mergeArticlesByUrl(articles: NewsArticleInput[]): NewsArticleInput[] {
@@ -74,7 +95,7 @@ export async function runNewsIngestion(): Promise<IngestionResult> {
   let retryCount = 0;
 
   try {
-    const tickers = parseTickersFromEnv();
+    const tickers = getIngestionTickers();
     let articles: NewsArticleInput[] = [];
     let lastFetchError: string | null = null;
 
